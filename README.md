@@ -1,4 +1,5 @@
 # maru
 
 ## Setup
+
 - init check

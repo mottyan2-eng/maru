@@ -1,2 +1,4 @@
 # maru
-# Setup\n- init check
+
+## Setup
+- init check

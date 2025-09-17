@@ -1,0 +1,45 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.env
+.venv/
+env/
+venv/
+build/
+dist/
+.eggs/
+*.egg-info/
+pip-wheel-metadata/
+.mypy_cache/
+.pytest_cache/
+.ipynb_checkpoints
+.coverage
+*.cover
+htmlcov/
+.cache/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+
+# VSCode
+.vscode/
+.history/

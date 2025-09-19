@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum Role {
+  ADMIN
+  STAFF
+  VIEWER
+}
+
+model Child {
+  id           String        @id @default(cuid())
+  firstName    String
+  lastName     String
+  birthDate    DateTime
+  guardians    GuardianChild[]
+  bookings     Booking[]
+  attendances  Attendance[]
+  dailyNotes   DailyNote[]
+  plans        Plan[]
+  addonFlags   AddonFlag[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Guardian {
+  id         String          @id @default(cuid())
+  name       String
+  email      String?
+  phone      String?
+  children   GuardianChild[]
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+}
+
+model GuardianChild {
+  guardian   Guardian @relation(fields: [guardianId], references: [id])
+  guardianId String
+  child      Child    @relation(fields: [childId], references: [id])
+  childId    String
+
+  @@id([guardianId, childId])
+}
+
+model Staff {
+  id        String   @id @default(cuid())
+  name      String
+  role      Role
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProgramSlot {
+  id          String    @id @default(cuid())
+  date        DateTime
+  startTime   DateTime
+  endTime     DateTime
+  capacity    Int
+  bookings    Booking[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([date])
+}
+
+model Booking {
+  id         String         @id @default(cuid())
+  child      Child          @relation(fields: [childId], references: [id])
+  childId    String
+  slot       ProgramSlot    @relation(fields: [slotId], references: [id])
+  slotId     String
+  status     BookingStatus  @default(PENDING)
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  attendance Attendance?
+
+  @@unique([childId, slotId])
+}
+
+model Attendance {
+  id         String    @id @default(cuid())
+  booking    Booking   @relation(fields: [bookingId], references: [id])
+  bookingId  String    @unique
+  checkInAt  DateTime?
+  checkOutAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model DailyNote {
+  id        String   @id @default(cuid())
+  child     Child    @relation(fields: [childId], references: [id])
+  childId   String
+  date      DateTime
+  note      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([date])
+}
+
+model Plan {
+  id           String   @id @default(cuid())
+  child        Child    @relation(fields: [childId], references: [id])
+  childId      String
+  description  String
+  effectiveOn  DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model AddonFlag {
+  id        String   @id @default(cuid())
+  child     Child    @relation(fields: [childId], references: [id])
+  childId   String
+  key       String
+  value     Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([childId, key])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  actorRole Role
+  details   Json?
+  createdAt DateTime @default(now())
+}
